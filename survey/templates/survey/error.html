@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Survey Error | GCSI Survey{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12">
+    <div class="survey-card card">
+      <div class="card-body text-center">
+        <div class="success-checkmark mx-auto" style="background-color:#fef2f2;">
+          <i class="bi bi-exclamation-triangle-fill" style="color: var(--error);"></i>
+        </div>
+        <h1 class="success-title">We could not continue this survey</h1>
+        <p class="success-message">The survey session may have expired or been interrupted. Please start again to continue.</p>
+        <a class="btn btn-success mt-3" href="{% url 'survey_start' %}">Start again</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

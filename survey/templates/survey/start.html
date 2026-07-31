@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Start Survey | GCSI Survey{% endblock %}
+{% block wrapper_class %}survey-wrapper survey-wrapper--wide{% endblock %}
+
+{% block content %}
+<div class="start-landing">
+  <div class="start-landing__inner">
+    <div class="brand-badge"> 
+      <img src="{% static 'logo.png' %}" alt="Logo" class="brand-logo">
+    </div>
+
+    <div class="home-card">
+      <div class="home-card__top"></div>
+      <div class="home-card__body">
+        <h1 class="home-title">GHANA CUSTOMER SERVICE INDEX<br> SURVEY 2026</h1>
+        <p class="home-sub">Multi-sector Survey on Customer Service in Ghana</p>
+      </div>
+    </div>
+
+    <div class="home-controls">
+      <form method="post" class="d-inline">{% csrf_token %}<button class="btn btn-outline-primary" type="submit">Begin</button></form>
+      <div class="home-progress">
+        <div class="home-progress__bar"><div class="home-progress__fill" style="width:20%"></div></div>
+        <div class="home-progress__meta">Page 1 of 8</div>
+      </div>
+      <a class="btn btn-outline-secondary" href="#">Clear form</a>
+    </div>
+
+    <div class="home-footer">
+      <div class="home-footer__brand">© Ghana Customer Service Index</div>
+      <div class="home-footer__credit">Powered By: Aggreybuttons Ltd.</div>
+      <div class="home-footer__copyright">
+        <strong>2026 Ghana Customer Service Index (GCSI). All Rights Reserved.</strong><br>
+        All content on this website, including text, survey materials, graphics, logos, images, reports, data, and software, is the intellectual property of GCSI or its licensors and is protected by copyright law.<br>
+        Any unauthorised copying, reproduction, distribution, modification, or commercial use is prohibited without prior written permission from GCSI. Survey participants may use the site only for authorised survey purposes.<br>
+        For permissions or copyright enquiries, please contact GCSI through the official contact information provided on this website.
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

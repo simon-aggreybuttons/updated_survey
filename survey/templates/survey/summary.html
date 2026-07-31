@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Review Answers | GCSI Survey{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12">
+    <div class="survey-card card">
+      <div class="card-body">
+        <h1 class="question-title mb-3">Review your answers</h1>
+        <p class="question-description mb-4">Please check every response before submitting. You can still go back and edit answers.</p>
+
+        <div class="list-group mb-4">
+          {% for item in review_items %}
+          <div class="list-group-item">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+              <div>
+                <h2 class="h6 mb-1">{{ item.question.title }}</h2>
+                <div class="text-muted small">{{ item.question.description }}</div>
+              </div>
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'survey_question' number=item.question.number %}">Edit</a>
+            </div>
+            <div class="mt-3">
+              {% if item.display_answer %}
+                {{ item.display_answer }}
+              {% else %}
+                <span class="text-muted">No answer provided yet.</span>
+              {% endif %}
+            </div>
+          </div>
+          {% empty %}
+          <div class="text-muted">No questions available.</div>
+          {% endfor %}
+        </div>
+
+        <form method="post" action="{% url 'survey_submit' %}">
+          {% csrf_token %}
+          <div class="d-grid">
+            <button class="btn btn-success" type="submit">Submit survey</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

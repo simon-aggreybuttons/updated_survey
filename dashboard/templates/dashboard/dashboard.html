@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | GCSI Survey{% endblock %}
+{% block wrapper_class %}survey-wrapper survey-wrapper--wide dashboard-page{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+  <section class="dashboard-hero">
+    <div class="dashboard-hero__content">
+      <div class="dashboard-kicker">Insights workspace</div>
+      <h1>Survey intelligence at a glance</h1>
+      <p>Track completions, response patterns, and satisfaction trends with a more refined, executive-ready view.</p>
+    </div>
+    <div class="dashboard-hero__actions">
+      <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard_export_csv' %}"><i class="bi bi-download"></i> Export CSV</a>
+      <a class="btn btn-success btn-sm" href="{% url 'dashboard_export_excel' %}"><i class="bi bi-file-earmark-excel"></i> Export Excel</a>
+      <a class="btn btn-outline-primary btn-sm" href="{% url 'password_change' %}"><i class="bi bi-key"></i> Change Password</a>
+    </div>
+  </section>
+
+  <section class="stats-grid">
+    <article class="metric-card metric-card--primary">
+      <div class="metric-card__icon"><i class="bi bi-bar-chart-fill"></i></div>
+      <div>
+        <div class="metric-card__label">Total responses</div>
+        <div class="metric-card__value">{{ total_responses }}</div>
+      </div>
+    </article>
+    <article class="metric-card metric-card--success">
+      <div class="metric-card__icon"><i class="bi bi-check2-circle"></i></div>
+      <div>
+        <div class="metric-card__label">Completed surveys</div>
+        <div class="metric-card__value">{{ completed_surveys }}</div>
+      </div>
+    </article>
+    <article class="metric-card">
+      <div class="metric-card__icon"><i class="bi bi-calendar-event"></i></div>
+      <div>
+        <div class="metric-card__label">Today</div>
+        <div class="metric-card__value">{{ today_surveys }}</div>
+      </div>
+    </article>
+    <article class="metric-card">
+      <div class="metric-card__icon"><i class="bi bi-hourglass-split"></i></div>
+      <div>
+        <div class="metric-card__label">In progress</div>
+        <div class="metric-card__value">{{ incomplete_surveys }}</div>
+      </div>
+    </article>
+  </section>
+
+  <section class="dashboard-grid">
+    <article class="panel-card">
+      <div class="panel-card__header">
+        <h2>Responses by sector</h2>
+        <span class="panel-card__badge">Live mix</span>
+      </div>
+      <ul class="data-list">
+        {% for item in responses_by_sector %}
+        <li>
+          <span>{{ item.label }}</span>
+          <strong>{{ item.value }}</strong>
+        </li>
+        {% empty %}
+        <li class="empty-state">No sector responses yet.</li>
+        {% endfor %}
+      </ul>
+    </article>
+
+    <article class="panel-card">
+      <div class="panel-card__header">
+        <h2>Gender distribution</h2>
+        <span class="panel-card__badge">Audience view</span>
+      </div>
+      <ul class="data-list">
+        {% for item in gender_distribution %}
+        <li>
+          <span>{{ item.label }}</span>
+          <strong>{{ item.value }}</strong>
+        </li>
+        {% empty %}
+        <li class="empty-state">No gender responses yet.</li>
+        {% endfor %}
+      </ul>
+    </article>
+
+    <article class="panel-card">
+      <div class="panel-card__header">
+        <h2>Region distribution</h2>
+        <span class="panel-card__badge">Geography</span>
+      </div>
+      <ul class="data-list">
+        {% for item in region_distribution %}
+        <li>
+          <span>{{ item.label }}</span>
+          <strong>{{ item.value }}</strong>
+        </li>
+        {% empty %}
+        <li class="empty-state">No region responses yet.</li>
+        {% endfor %}
+      </ul>
+    </article>
+
+    <article class="panel-card">
+      <div class="panel-card__header">
+        <h2>Satisfaction scores</h2>
+        <span class="panel-card__badge">Pulse</span>
+      </div>
+      <div class="score-highlight">{{ satisfaction_average }}</div>
+      <p class="text-muted mb-3">Average satisfaction score from completed responses.</p>
+      <ul class="data-list">
+        {% for item in satisfaction_distribution %}
+        <li>
+          <span>Score {{ item.label }}</span>
+          <strong>{{ item.value }}</strong>
+        </li>
+        {% empty %}
+        <li class="empty-state">No satisfaction scores yet.</li>
+        {% endfor %}
+      </ul>
+    </article>
+  </section>
+
+  <section class="table-card">
+    <div class="panel-card__header">
+      <h2>Recent completed responses</h2>
+      <span class="panel-card__badge">Latest activity</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-modern align-middle">
+        <thead>
+          <tr>
+            <th>Survey</th>
+            <th>Sector</th>
+            <th>Gender</th>
+            <th>Region</th>
+            <th>Satisfaction</th>
+            <th>Completed</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in survey_rows %}
+          <tr>
+            <td>#{{ row.survey_id }}</td>
+            <td>{{ row.sector|default:'-' }}</td>
+            <td>{{ row.gender|default:'-' }}</td>
+            <td>{{ row.region|default:'-' }}</td>
+            <td>{{ row.satisfaction_score|default:'-' }}</td>
+            <td>{{ row.completed_at|date:'Y-m-d H:i' }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="empty-state">No completed responses yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

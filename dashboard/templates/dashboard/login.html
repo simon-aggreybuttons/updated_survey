@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Sign In | GCSI Survey{% endblock %}
+{% block wrapper_class %}survey-wrapper dashboard-login-page{% endblock %}
+
+{% block content %}
+<div class="admin-login-shell">
+  <div class="admin-login-card">
+    <div class="admin-login-hero">
+      <div class="dashboard-kicker">Secure access</div>
+      <h1>Welcome to the GCSI insights workspace</h1>
+      <p>Sign in to review survey performance, export responses, and track the latest activity.</p>
+      <div class="admin-login-bubbles">
+        <span class="admin-login-bubble"><i class="bi bi-shield-check"></i> Protected</span>
+        <span class="admin-login-bubble"><i class="bi bi-graph-up"></i> Insights</span>
+        <span class="admin-login-bubble"><i class="bi bi-download"></i> Exports</span>
+      </div>
+    </div>
+
+    <div class="admin-login-form">
+      <h2>Sign in</h2>
+      <p>Use your admin credentials to open the dashboard.</p>
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <div class="admin-login-field">
+          <label for="id_username">Username</label>
+          {{ form.username }}
+        </div>
+        <div class="admin-login-field">
+          <label for="id_password">Password</label>
+          {{ form.password }}
+        </div>
+        <div class="admin-login-actions">
+          <button class="admin-login-submit" type="submit">Sign in</button>
+          <a class="admin-login-help" href="{% url 'survey_start' %}">Back to home</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

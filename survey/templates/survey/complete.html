@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Survey Complete | GCSI Survey{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12">
+    <div class="survey-card card">
+      <div class="card-body text-center">
+        <div class="success-checkmark mx-auto">
+          <i class="bi bi-check-lg"></i>
+        </div>
+        <h1 class="success-title">Thank you for completing the survey</h1>
+        <p class="success-message">Your feedback has been received and will help improve customer service experiences across Ghana.</p>
+        <a class="btn btn-success mt-3" href="{% url 'survey_start' %}">Take it again</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

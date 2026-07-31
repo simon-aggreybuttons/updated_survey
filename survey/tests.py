@@ -1,0 +1,50 @@
+from django.test import TestCase
+from django.core.management import call_command
+
+from .models import Choice, Question, Survey
+from .services import format_answer_display, save_survey_responses
+from .utils import render_question_text
+
+
+class SurveyResponseStorageTests(TestCase):
+    def test_save_survey_responses_updates_existing_answers_without_duplicates(self):
+        survey = Survey.objects.create(status='in_progress')
+        question = Question.objects.create(number=1, title='Sector', question_type='radio', required=True)
+
+        answers = {str(question.id): 'Telecommunications'}
+        save_survey_responses(survey, answers)
+        save_survey_responses(survey, answers)
+
+        self.assertEqual(survey.responses.count(), 1)
+        self.assertEqual(survey.responses.get(question=question).answer, 'Telecommunications')
+
+    def test_format_answer_display_converts_lists_and_dicts_to_readable_text(self):
+        self.assertEqual(format_answer_display(['Zenith Bank (Ghana) Limited']), 'Zenith Bank (Ghana) Limited')
+        self.assertEqual(format_answer_display({'Trust': '10', 'Look and feel': '9'}), 'Trust: 10; Look and feel: 9')
+
+    def test_shows_scale_guidance_for_numeric_rating_radio_questions(self):
+        question = Question.objects.create(number=2, title='Satisfaction', question_type='radio', required=True)
+        Choice.objects.create(question=question, text='1', value='1', order=1)
+        Choice.objects.create(question=question, text='2', value='2', order=2)
+        Choice.objects.create(question=question, text='3', value='3', order=3)
+
+        self.assertTrue(question.shows_scale_guidance())
+
+    def test_render_question_text_replaces_bank_specific_terms_with_sector_labels(self):
+        text = 'Please select ALL_THE_BANKS in the SELECTED_SECTOR sector. If the BANK is not listed, please type it in the space provided for Others.'
+
+        rendered = render_question_text(text, 'Hospitality', 'The African Regent Hotel')
+
+        self.assertIn('hotels', rendered)
+        self.assertIn('Hospitality', rendered)
+        self.assertIn('hotel', rendered)
+        self.assertNotIn('BANK', rendered)
+
+    def test_seed_deactivates_legacy_duplicate_page_four(self):
+        Question.objects.create(number=4, title='Duplicate company question', question_type='checkbox')
+
+        call_command('seed_survey')
+
+        self.assertFalse(Question.objects.get(number=4).active)
+        self.assertTrue(Question.objects.get(number=3).active)
+        self.assertTrue(Question.objects.get(number=5).active)
