@@ -222,7 +222,7 @@ class Command(BaseCommand):
             },
             {
                 'number': 3,
-                'title': 'Please select ALL_THE_COMPANIES in the SELECTED_SECTOR sector that you have done business with in the last 12 months, even if only once. If the COMPANY_TYPE_SINGULAR is not listed, please type it in the space provided for Others.',
+                'title': 'Please select ALL_THE_COMPANIES in the SELECTED_SECTOR sector that you have done business with in the last 12 months, even if only once. If the BANKS_SINGULAR is not listed, please type it in the space provided for Others.',
                 'question_type': 'checkbox',
                 'choices': [(text, text) for text in company_choices],
             },

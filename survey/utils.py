@@ -240,6 +240,7 @@ def render_question_text(text: str, sector: str | None = None, company: str | No
         'BANKING_SECTOR': safe_sector,
         'ALL_THE_BANKS': get_sector_company_label(sector),
         'ALL_THE_COMPANIES': get_sector_company_label(sector),
+        'BANKS_SINGULAR': get_sector_company_singular_label(sector).capitalize(),
         'COMPANY_TYPE': get_sector_company_label(sector),
         'COMPANY_TYPE_SINGULAR': get_sector_company_singular_label(sector),
         'SELECTED_COMPANY': safe_company,
@@ -252,4 +253,16 @@ def render_question_text(text: str, sector: str | None = None, company: str | No
     text = re.sub(r'\bBANKING_SECTOR\b', safe_sector, text, flags=re.IGNORECASE)
     text = re.sub(r'\bBANKS\b', get_sector_company_label(sector), text, flags=re.IGNORECASE)
     text = re.sub(r'\bBANK\b', get_sector_company_singular_label(sector), text, flags=re.IGNORECASE)
+    text = re.sub(
+        rf'\b{re.escape(get_sector_company_label(sector))}_SINGULAR\b',
+        get_sector_company_singular_label(sector).capitalize(),
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(
+        r'\bBANKS_SINGULAR\b',
+        get_sector_company_singular_label(sector).capitalize(),
+        text,
+        flags=re.IGNORECASE,
+    )
     return text

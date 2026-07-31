@@ -40,6 +40,25 @@ class SurveyResponseStorageTests(TestCase):
         self.assertIn('hotel', rendered)
         self.assertNotIn('BANK', rendered)
 
+    def test_render_question_text_replaces_legacy_singular_placeholder_by_sector(self):
+        text = 'If the banks_SINGULAR is not listed, please type it in the space provided for Others.'
+
+        self.assertEqual(
+            render_question_text(text, 'Banking'),
+            'If the Bank is not listed, please type it in the space provided for Others.',
+        )
+        self.assertEqual(
+            render_question_text(text, 'Hospitality'),
+            'If the Hotel is not listed, please type it in the space provided for Others.',
+        )
+        self.assertEqual(
+            render_question_text(
+                'If the utility companies_SINGULAR is not listed, please type it in the space provided for Others.',
+                'Utilities',
+            ),
+            'If the Utility company is not listed, please type it in the space provided for Others.',
+        )
+
     def test_seed_deactivates_legacy_duplicate_page_four(self):
         Question.objects.create(number=4, title='Duplicate company question', question_type='checkbox')
 
@@ -48,3 +67,21 @@ class SurveyResponseStorageTests(TestCase):
         self.assertFalse(Question.objects.get(number=4).active)
         self.assertTrue(Question.objects.get(number=3).active)
         self.assertTrue(Question.objects.get(number=5).active)
+
+    def test_clear_survey_returns_to_start_and_clears_session(self):
+        session = self.client.session
+        session['survey_id'] = 123
+        session['current_question'] = 5
+        session['selected_sector'] = 'Utilities'
+        session['selected_company'] = 'Ghana Water Company'
+        session['completed'] = True
+        session.save()
+
+        response = self.client.get('/survey/clear/')
+
+        self.assertRedirects(response, '/survey/start/')
+        self.assertNotIn('survey_id', self.client.session)
+        self.assertNotIn('current_question', self.client.session)
+        self.assertNotIn('selected_sector', self.client.session)
+        self.assertNotIn('selected_company', self.client.session)
+        self.assertNotIn('completed', self.client.session)
