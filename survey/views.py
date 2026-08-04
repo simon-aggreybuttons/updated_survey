@@ -151,7 +151,7 @@ class SurveyQuestionView(View):
             if missing_rows:
                 validation_errors.append('Please answer all columns in the matrix before proceeding.')
 
-            if question.number in (5, 6) and len(set(selected_values)) != len(selected_values):
+            if question.number in (4, 5, 6) and len(set(selected_values)) != len(selected_values):
                 validation_errors.append('Please choose a unique rating value for each row.')
 
             if validation_errors:

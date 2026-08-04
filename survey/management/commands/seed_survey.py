@@ -227,6 +227,24 @@ class Command(BaseCommand):
                 'choices': [(text, text) for text in company_choices],
             },
             {
+                'number': 4,
+                'title': 'Please rank the following factors from top priority to least priority for you. Use each number only once, where 1 means the highest priority and 10 means the lowest priority.',
+                'question_type': 'matrix',
+                'matrix_rows': [
+                    'Trust',
+                    'Look and feel',
+                    'Competence',
+                    'Professionalism',
+                    'Ease of doing business',
+                    'Processes and procedures',
+                    'Customer-focused innovations',
+                    'Engagement with customers',
+                    'Complaints and feedback',
+                    'Health and safety',
+                ],
+                'choices': [(str(i), str(i)) for i in range(1, 11)],
+            },
+            {
                 'number': 5,
                 'title': 'ONE (1) RESPONSE PER ROW. Please select a rating that best describes your extent of satisfaction with your experience with SELECTED_COMPANY in terms of the following, where 1 means totally dissatisfied, and 10 means totally satisfied.',
                 'question_type': 'matrix',
@@ -414,9 +432,6 @@ class Command(BaseCommand):
                 'choices': [('Yes', 'Yes'), ('No', 'No')],
             },
         ]
-
-        # Page 4 was a duplicate of the sector company question on page 3.
-        Question.objects.filter(number=4).update(active=False)
 
         for item in questions:
             question, _ = Question.objects.update_or_create(

@@ -64,9 +64,18 @@ class SurveyResponseStorageTests(TestCase):
 
         call_command('seed_survey')
 
-        self.assertFalse(Question.objects.get(number=4).active)
+        self.assertTrue(Question.objects.get(number=4).active)
         self.assertTrue(Question.objects.get(number=3).active)
         self.assertTrue(Question.objects.get(number=5).active)
+
+    def test_seed_creates_ranking_question_after_page_four(self):
+        call_command('seed_survey')
+
+        question = Question.objects.get(number=4)
+        self.assertEqual(question.question_type, 'matrix')
+        self.assertTrue(question.active)
+        self.assertIn('Trust', [row.label for row in question.questionmatrixrow_set.all()])
+        self.assertEqual(question.questionmatrixrow_set.count(), 10)
 
     def test_clear_survey_returns_to_start_and_clears_session(self):
         session = self.client.session
