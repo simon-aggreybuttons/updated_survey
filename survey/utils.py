@@ -199,7 +199,7 @@ def get_sector_companies(sector: str | None) -> list[str]:
             'Donewell Insurance Company Limited',
             'Enterprise Insurance Company Limited',
             'Enterprise Life',
-            'Glico',
+            'Glico Life',
             'GN Life Assurance Limited',
             'Hollard Insurance Ghana Limited',
             'Hollard Life',

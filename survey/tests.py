@@ -3,7 +3,7 @@ from django.core.management import call_command
 
 from .models import Choice, Question, Survey
 from .services import format_answer_display, save_survey_responses
-from .utils import render_question_text
+from .utils import get_sector_companies, render_question_text
 
 
 class SurveyResponseStorageTests(TestCase):
@@ -39,6 +39,10 @@ class SurveyResponseStorageTests(TestCase):
         self.assertIn('Hospitality', rendered)
         self.assertIn('hotel', rendered)
         self.assertNotIn('BANK', rendered)
+
+    def test_get_sector_companies_uses_glico_life_label_for_insurance(self):
+        self.assertIn('Glico Life', get_sector_companies('Insurance'))
+        self.assertNotIn('Glico', get_sector_companies('Insurance'))
 
     def test_render_question_text_replaces_legacy_singular_placeholder_by_sector(self):
         text = 'If the banks_SINGULAR is not listed, please type it in the space provided for Others.'
