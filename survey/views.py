@@ -173,6 +173,8 @@ class SurveyQuestionView(View):
             answers[str(question.id)] = selected
         else:
             value = request.POST.get('answer', '')
+            if isinstance(value, str) and value.strip().lower() == 'none':
+                value = ''
             if question.required and not str(value).strip():
                 messages.error(request, 'This question is required.')
                 return redirect('survey_question', number=number)

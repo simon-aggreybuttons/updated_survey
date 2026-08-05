@@ -98,3 +98,31 @@ class SurveyResponseStorageTests(TestCase):
         self.assertNotIn('selected_sector', self.client.session)
         self.assertNotIn('selected_company', self.client.session)
         self.assertNotIn('completed', self.client.session)
+
+    def test_blank_required_text_answer_is_rejected(self):
+        question = Question.objects.create(number=16, title='What is your age? Please give your exact age in figures.', question_type='text', required=True)
+        survey = Survey.objects.create(status='in_progress')
+
+        session = self.client.session
+        session['survey_id'] = survey.id
+        session['current_question'] = question.number
+        session.save()
+
+        response = self.client.post(f'/survey/question/{question.number}/', {'answer': ''})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(f'/survey/question/{question.number}/', response['Location'])
+
+    def test_required_text_question_with_none_initial_value_still_validates(self):
+        question = Question.objects.create(number=25, title='What is your impression?', question_type='text', required=True)
+        survey = Survey.objects.create(status='in_progress')
+
+        session = self.client.session
+        session['survey_id'] = survey.id
+        session['current_question'] = question.number
+        session.save()
+
+        response = self.client.post(f'/survey/question/{question.number}/', {'answer': 'None'})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(f'/survey/question/{question.number}/', response['Location'])

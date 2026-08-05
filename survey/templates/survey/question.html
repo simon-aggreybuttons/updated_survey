@@ -42,14 +42,14 @@
       </div>
       {% endif %}
 
-      <form method="post" class="survey-form" novalidate>
+      <form method="post" class="survey-form" data-question-type="{{ question.question_type }}" data-required="{{ question.required|yesno:'true,false' }}">
         {% csrf_token %}
           {% if question.question_type == 'radio' %}
             {% with choices|default:question.choices as answer_choices %}
             <div class="answer-list">
               {% for choice in answer_choices %}
               <label class="answer-item">
-                <input class="answer-input" type="radio" name="answer" id="choice-{{ forloop.counter }}" value="{{ choice.value|default:choice.text }}" {% if initial_value == choice.value or initial_value == choice.text %}checked{% endif %}>
+                <input class="answer-input" type="radio" name="answer" id="choice-{{ forloop.counter }}" value="{{ choice.value|default:choice.text }}" {% if question.required %}required{% endif %} {% if initial_value == choice.value or initial_value == choice.text %}checked{% endif %}>
                 <span class="answer-dot" aria-hidden="true"></span>
                 <span class="answer-label">{{ choice.text }}</span>
               </label>
@@ -75,7 +75,7 @@
           {% elif question.question_type == 'dropdown' %}
             {% with choices|default:question.choices as answer_choices %}
             <div class="answers">
-              <select class="form-select" name="answer">
+              <select class="form-select" name="answer" {% if question.required %}required{% endif %}>
                 <option value="">Choose one...</option>
                 {% for choice in answer_choices %}
                 <option value="{{ choice.value|default:choice.text }}" {% if initial_value == choice.value or initial_value == choice.text %}selected{% endif %}>{{ choice.text }}</option>
@@ -100,7 +100,7 @@
                     <th scope="row" class="fw-normal">{{ row.label }}</th>
                     {% for choice in question.choices %}
                     <td class="text-center">
-                      <input class="form-check-input matrix-radio" type="radio" name="matrix_{{ row.id }}" data-row="{{ row.id }}" value="{{ choice.value|default:choice.text }}">
+                      <input class="form-check-input matrix-radio" type="radio" name="matrix_{{ row.id }}" data-row="{{ row.id }}" value="{{ choice.value|default:choice.text }}" {% if forloop.first %}required{% endif %}>
                     </td>
                     {% endfor %}
                   </tr>
@@ -112,19 +112,19 @@
             </div>
           {% elif question.question_type == 'textarea' %}
             <div class="answers">
-              <textarea class="form-control" name="answer" rows="5">{{ initial_value }}</textarea>
+              <textarea class="form-control" name="answer" rows="5" {% if question.required %}required{% endif %}>{{ initial_value|default_if_none:'' }}</textarea>
             </div>
           {% elif question.question_type == 'number' %}
             <div class="answers">
-              <input class="form-control" type="number" name="answer" value="{{ initial_value }}">
+              <input class="form-control" type="number" name="answer" value="{{ initial_value|default_if_none:'' }}" {% if question.required %}required{% endif %}>
             </div>
           {% elif question.question_type == 'date' %}
             <div class="answers">
-              <input class="form-control" type="date" name="answer" value="{{ initial_value }}">
+              <input class="form-control" type="date" name="answer" value="{{ initial_value|default_if_none:'' }}" {% if question.required %}required{% endif %}>
             </div>
           {% else %}
             <div class="answers">
-              <input class="form-control" type="text" name="answer" value="{{ initial_value }}">
+              <input class="form-control" type="text" name="answer" value="{{ initial_value|default_if_none:'' }}" {% if question.required %}required{% endif %}>
             </div>
           {% endif %}
           <div class="question-footer">
@@ -205,6 +205,31 @@ document.addEventListener('DOMContentLoaded', function() {
           e.preventDefault();
           alert('Each rating value can only be used once across rows. Please choose unique ratings for each row.');
           return false;
+        }
+
+        const isRequired = form.dataset.required === 'true';
+        const questionType = form.dataset.questionType;
+
+        if (isRequired && questionType === 'checkbox') {
+          const checkboxes = form.querySelectorAll('input[type="checkbox"][name="answer"]');
+          const anyChecked = Array.from(checkboxes).some(el => el.checked);
+          if (!anyChecked) {
+            e.preventDefault();
+            alert('Please select at least one option before continuing.');
+            return false;
+          }
+        }
+
+        if (isRequired && questionType === 'matrix') {
+          const rowNames = new Set(Array.from(matrixRadios).map(r => r.name));
+          for (const rowName of rowNames) {
+            const checked = Array.from(form.querySelectorAll(`input[name="${rowName}"]`)).some(el => el.checked);
+            if (!checked) {
+              e.preventDefault();
+              alert('Please provide an answer for every row in the matrix.');
+              return false;
+            }
+          }
         }
       });
     }
